@@ -7,15 +7,11 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
-  "license": "ISC",
+  "license": "See ./LICENSE",
   "dependencies": {
-    "exceljs": "^1.4.8",
-    "jquery": "^3.3.1",
-    "jsdom": "^11.6.2",
-    "mysql": "^2.15.0",
-    "node-ipc": "^9.1.1",
-    "request-promise": "^4.2.2",
-    "sparkbots": "github:sparkbots/spark#Development"
+    "rethinkdbdash": "latest",
+    "sparkbots": "latest"
   },
-  "lock": false
+  "lock": false,
+  "private": true
 }
