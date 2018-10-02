@@ -1,0 +1,21 @@
+{
+  "name": "clv-lan",
+  "version": "1.0.0",
+  "description": "",
+  "main": "start.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "exceljs": "^1.4.8",
+    "jquery": "^3.3.1",
+    "jsdom": "^11.6.2",
+    "mysql": "^2.15.0",
+    "node-ipc": "^9.1.1",
+    "request-promise": "^4.2.2",
+    "sparkbots": "github:sparkbots/spark#Development"
+  },
+  "lock": false
+}
