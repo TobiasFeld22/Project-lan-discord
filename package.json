@@ -9,6 +9,7 @@
   "author": "",
   "license": "See ./LICENSE",
   "dependencies": {
+    "node-ipc": "^9.1.1",
     "rethinkdbdash": "latest",
     "sparkbots": "latest"
   },

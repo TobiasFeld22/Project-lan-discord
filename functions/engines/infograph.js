@@ -11,13 +11,29 @@ engine.code = (client) => {
             var data = await getStats(x)
             client.channels.get("495899284416233487").setName(`👱 ${data} deelnemers binnen`)
             var time = null
-            console.log(moment())
             if (moment.utc().valueOf() > 1542380400000) {
                 time = moment.duration(1542380400000 - moment.utc().valueOf(), "milliseconds").format(" HH: mm [tot eind]")
             } else {
                 time = moment.duration(1542380400000 - moment.utc().valueOf(), "milliseconds").format("d[d], HH: mm [👉 Start]")
             }
             client.channels.get("495899425017954315").setName(`🕒 ${time}`)
+            var twitch = await client.r.table("twitch")
+            var online = 0
+            twitch.forEach(i => {
+                if (i.nr != 0) {
+                    online = online + 1
+                }
+            })
+            if (online == 0) {
+                client.channels.get("500095680791183361").setName("📹 Geen streamers online")
+            } else if (online == 1) {
+                client.channels.get("500095680791183361").setName(`📹 ${online} streamer 👉 #twitch`)
+            } else {
+                client.channels.get("500095680791183361").setName(`📹 ${online} streamers 👉 #twitch`)
+
+            }
+
+
         })
         .catch(e => {
             console.error(e)
