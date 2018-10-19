@@ -7,5 +7,6 @@
         }],
     "lan_user": "Inlog admin.lan/",
     "lan_pw": "ww admin.lan",
-    "token": "discord bot token"
+    "token": "discord bot token",
+    "prefix": "!"
 }
