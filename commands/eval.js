@@ -1,5 +1,8 @@
 /* eslint no-eval: off */
-module.exports = (client, message) => {
+const spark = require("sparkbots")
+const command = spark.command("eval")
+command.level = 10
+command.code = (client, message) => {
 
     const code = message.content.split(" ").slice(1).join(" ")
     if (code.trim().length == 0) {
@@ -48,6 +51,7 @@ module.exports = (client, message) => {
         message.channel.send(`\`ERROR\` \`\`\`xl\n${clean(err)}\n\`\`\``);
     }
 }
+module.exports = command
 
 function next(evaled, m) {
     if (typeof evaled !== "string") {
