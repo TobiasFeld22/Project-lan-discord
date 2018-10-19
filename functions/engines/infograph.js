@@ -4,6 +4,8 @@ var moment = require("moment")
 require("moment-duration-format")(moment)
 var baseurl = "https://admin.projectlan.nl/"
 var config = require("./../../data/config.json")
+var ctime = 1542380400000
+var next = 1564668000000
 engine.setTime(60000)
 engine.code = (client) => {
     login(config.lan_user, config.lan_pw)
@@ -11,10 +13,12 @@ engine.code = (client) => {
             var data = await getStats(x)
             client.channels.get("495899284416233487").setName(`👱 ${data} deelnemers binnen`)
             var time = null
-            if (moment.utc().valueOf() > 1542380400000) {
-                time = moment.duration(1542380400000 - moment.utc().valueOf(), "milliseconds").format(" HH: mm [tot eind]")
+            if (moment.utc().valueOf() > ctime && moment.utc().valueOf() < (ctime + 86400000)) {
+                time = moment.duration((ctime + 86400000) - moment.utc().valueOf(), "milliseconds").format("HH: mm [👉 Einde]")
+            } else if (moment.utc().valueOf() > ctime && moment.utc().valueOf() > (ctime + 86400000)) {
+                time = moment.duration((next) - moment.utc().valueOf(), "milliseconds").format("d[d], HH: mm [👉 lan 32!]")
             } else {
-                time = moment.duration(1542380400000 - moment.utc().valueOf(), "milliseconds").format("d[d], HH: mm [👉 Start]")
+                time = moment.duration(ctime - moment.utc().valueOf(), "milliseconds").format("d[d], HH: mm [👉 Begin]")
             }
             client.channels.get("495899425017954315").setName(`🕒 ${time}`)
             var twitch = await client.r.table("twitch")
