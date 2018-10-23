@@ -4,39 +4,12 @@ var moment = require("moment")
 require("moment-duration-format")(moment)
 var baseurl = "https://admin.projectlan.nl/"
 var config = require("./../../data/config.json")
-var ctime = 1542380400000
-var next = 1564668000000
-engine.setTime(60000)
+engine.setTime(3600000)
 engine.code = (client) => {
     login(config.lan_user, config.lan_pw)
         .then(async x => {
             var data = await getStats(x)
             client.channels.get("495899284416233487").setName(`👱 ${data} deelnemers binnen`)
-            var time = null
-            if (moment.utc().valueOf() > ctime && moment.utc().valueOf() < (ctime + 86400000)) {
-                time = moment.duration((ctime + 86400000) - moment.utc().valueOf(), "milliseconds").format("HH: mm [👉 Einde]")
-            } else if (moment.utc().valueOf() > ctime && moment.utc().valueOf() > (ctime + 86400000)) {
-                time = moment.duration((next) - moment.utc().valueOf(), "milliseconds").format("d[d], HH: mm [👉 lan 32!]")
-            } else {
-                time = moment.duration(ctime - moment.utc().valueOf(), "milliseconds").format("d[d], HH: mm [👉 Begin]")
-            }
-            client.channels.get("495899425017954315").setName(`🕒 ${time}`)
-            var twitch = await client.r.table("twitch")
-            var online = 0
-            twitch.forEach(i => {
-                if (i.nr != 0) {
-                    online = online + 1
-                }
-            })
-            if (online == 0) {
-                client.channels.get("500095680791183361").setName("📹 Geen streamers online")
-            } else if (online == 1) {
-                client.channels.get("500095680791183361").setName(`📹 ${online} streamer 👉 #twitch`)
-            } else {
-                client.channels.get("500095680791183361").setName(`📹 ${online} streamers 👉 #twitch`)
-
-            }
-
 
         })
         .catch(e => {
