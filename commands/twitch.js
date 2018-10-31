@@ -6,7 +6,7 @@ command.code = function(client, message) {
     if (message.content.split(" ").length <= 1) {
         return message.channel.send("Gebruik het command op deze manier: \n`!twitch <twitch-gebruikersnaam-hier>`")
     }
-    var name = arguments.splice(1).join(" ")
+    var name = message.content.split(" ").splice(1).join(" ")
     message.channel.send("Profiel aan het zoeken op Twitch").then(msg => {
 
             request.get({
