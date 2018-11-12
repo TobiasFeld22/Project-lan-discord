@@ -6,6 +6,7 @@ var baseurl = "https://admin.projectlan.nl/"
 var config = require("./../../data/config.json")
 engine.setTime(3600000)
 engine.code = (client) => {
+    console.log("Logging in")
     login(config.lan_user, config.lan_pw)
         .then(async x => {
             var data = await getStats(x)
@@ -41,14 +42,7 @@ function getStats(cookie) {
                 return console.error(error)
             }
             var $ = cheerio.load(body)
-            var user = $(".huge")
-            if (user.eq(0).text().includes("/")) {
-                return resolve(user.eq(0).text().split("/")[0])
-            }
-            return resolve(user.eq(0).text())
-
-
-
+            return resolve($(".huge").eq(0).text())
         });
     })
 }
