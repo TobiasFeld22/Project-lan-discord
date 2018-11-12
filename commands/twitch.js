@@ -35,7 +35,7 @@ command.code = function(client, message) {
 
 
                     const collector = msg.createReactionCollector((r, u) => {
-                        filter(message, r, u)
+                        return filter(message, r, u)
                     }, {time: 30000});
                     collector.on("collect", r => {
                         triggered = true
@@ -75,6 +75,7 @@ command.code = function(client, message) {
                     })
                     collector.on("end", () => {
                         if (triggered == false) {
+                            msg.clearReactions()
                             return msg.edit(":stopwatch: 30 seconden zijn verlopen", {embed: {}})
                         }
                     })
