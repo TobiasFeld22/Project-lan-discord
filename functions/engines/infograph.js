@@ -1,8 +1,10 @@
+/* eslint no-process-env: 0 */
 const spark = require("sparkbots")
 const engine = spark.engine("infograph")
 var moment = require("moment")
 require("moment-duration-format")(moment)
 var baseurl = "https://admin.projectlan.nl/"
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = 0;
 var config = require("./../../data/config.json")
 engine.setTime(3600000)
 engine.code = (client) => {
