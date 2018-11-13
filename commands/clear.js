@@ -15,8 +15,8 @@ command.code = (client, message) => {
     if (isNaN(message.content.split(" ")[1])) {
         return message.channel.send("Gebruik het command op deze manier: `!clear 1-99`")
     }
-    var nr = parseInt(message.content.split(" "))
-    nr = Math.floor(nr[1])
+    var nr = parseInt(message.content.split(" ")[1])
+    nr = Math.floor(nr)
     if (nr < 1 || nr > 99) {
         return message.channel.send("Gebruik een nummer tussen 1 en 99")
     }
