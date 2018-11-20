@@ -7,6 +7,7 @@ var baseurl = "https://admin.projectlan.nl/"
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = 0;
 var config = require("./../../data/config.json")
 engine.setTime(3600000)
+engine.disable()
 engine.code = (client) => {
     console.log("Logging in")
     login(config.lan_user, config.lan_pw)
