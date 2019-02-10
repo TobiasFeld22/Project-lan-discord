@@ -11,7 +11,7 @@ command.code = (client, message) => {
     if (message.member.roles.has("537062265044598787")) {
         return message.member.removeRole("537062265044598787")
             .then(() => {
-                message.channel.send("Ik heb de **Aanwezig GameBattle 2019** role weggehaald.")
+                message.channel.send("Ik heb de **Aanwezig CLVLAN 32** role weggehaald.")
             })
             .catch(e => {
                 console.error(e)
@@ -20,7 +20,7 @@ command.code = (client, message) => {
     }
     return message.member.addRole("537062265044598787")
         .then(() => {
-            message.channel.send("Leuk dat je naar de Gamebattle 2019 komt!\n\nIk heb je de **Aanwezig GameBattle 2019** role gegeven.")
+            message.channel.send("Leuk dat je naar CLVLAN 32 komt!\n\nIk heb je de **Aanwezig CLVLAN 32** role gegeven.")
         })
         .catch(e => {
             console.error(e)
