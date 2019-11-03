@@ -3,6 +3,8 @@ const engine = spark.engine("twitch")
 const request = require("request")
 const ipc = require("node-ipc")
 engine.code = function(client) {
+
+    /*
     ipc.config.id = "clv-lan-server"
     ipc.config.retry = 1500
     ipc.serve(() => {
@@ -70,8 +72,9 @@ engine.code = function(client) {
         .catch(e => {
             console.error(e)
         })
-
+*/
 }
+
 engine.delay = 2000
 module.exports = engine
 var timeout = 0

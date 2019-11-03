@@ -1,7 +1,7 @@
 var Spark = require("sparkbots")
 var command = Spark.command("twitch")
 var request = require("request")
-command.level = 5
+command.level = 10
 command.code = function(client, message) {
     if (message.content.split(" ").length <= 1) {
         return message.channel.send("Gebruik het command op deze manier: \n`!twitch <twitch-gebruikersnaam-hier>`")
