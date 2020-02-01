@@ -8,5 +8,13 @@
     "lan_user": "Inlog admin.lan/",
     "lan_pw": "ww admin.lan",
     "token": "discord bot token",
-    "prefix": "!"
+    "prefix": "!",
+    "spotifyClientId": "Spotify id",
+    "spotifyClietnSecret": "Spotify client secret",
+    "spotifyCallBackURL": "Spotify callback url",
+    "spotifyChannel": "An Discord channel id",
+    "player": {
+        "channel": "channel id",
+        "message": "message id (sent by bot)"
+    }
 }

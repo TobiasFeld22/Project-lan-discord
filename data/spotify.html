@@ -1,0 +1,14 @@
+<!DOCTYPE html><html><head></head><body>
+	Gebruik dit command bij de Discord bot met deze text: <br>
+	!auth [ID]<br>
+	Voer de code in die je van de bot krijgt<br>
+	<input type="password">
+	<button onclick="send()">Verstuur</button>
+	<script>
+	function send(){
+		if (document.querySelectorAll("input")[0].value.length == 0){return alert("Voer een code in.")}
+		window.location = "/spotify-auth/c/[ID]/" + document.querySelectorAll("input")[0].value
+	}
+	</script>
+
+</body></html>
