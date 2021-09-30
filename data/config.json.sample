@@ -1,20 +1,4 @@
 {
-    "password": "wachtwoord rethink database",
-    "username": "username rethink database",
-    "servers": [{
-            "host": "ip rethink db",
-            "port": 28015
-        }],
-    "lan_user": "Inlog admin.lan/",
-    "lan_pw": "ww admin.lan",
-    "token": "discord bot token",
-    "prefix": "!",
-    "spotifyClientId": "Spotify id",
-    "spotifyClietnSecret": "Spotify client secret",
-    "spotifyCallBackURL": "Spotify callback url",
-    "spotifyChannel": "An Discord channel id",
-    "player": {
-        "channel": "channel id",
-        "message": "message id (sent by bot)"
-    }
+    "token": "discord bot token"
 }
+ 
