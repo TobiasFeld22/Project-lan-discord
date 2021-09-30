@@ -7,7 +7,6 @@ import roleCommand from "./roleCommand";
 import testCommand from "./testCommand";
 
 const rest = new REST({ version: "9" }).setToken(config.token);
-let queue: { timestamp: number; id: string }[] = [];
 let channelId = "378156957070000139";
 
 const commands = [
@@ -144,15 +143,7 @@ start();
 async function handleButton(client: Client, interaction: ButtonInteraction) {
   switch (interaction.customId) {
     case "button_test":
-      let reaction = await interaction.reply({
-        content: "test!!!",
-        fetchReply: true,
-      });
-      queue.push({
-        timestamp: new Date().getTime(),
-        id: reaction.id,
-      });
-
+      interaction.reply({ ephemeral: true, content: "test" });
       break;
   }
 }

@@ -32,9 +32,11 @@ export default async function role(
     }
   } catch (error) {
     console.error(error);
-    return interaction.reply(
-      "Er ging iets mis met het geven van je role, probeer het later opnieuw."
-    );
+    return interaction.reply({
+      content:
+        "Er ging iets mis met het geven van je role, probeer het later opnieuw.",
+      ephemeral: true,
+    });
   }
 }
 
@@ -45,10 +47,16 @@ async function addOrTakeRole(interaction: CommandInteraction, role: string) {
 
   if (!(await hasRole(member, role))) {
     await addRole(member, role);
-    interaction.reply("Ik heb je de role gegeven.");
+    interaction.reply({
+      ephemeral: true,
+      content: "Ik heb je de role gegeven.",
+    });
   } else {
     await removeRole(member, role);
-    interaction.reply("Ik de role van je afgenomen.");
+    interaction.reply({
+      ephemeral: true,
+      content: "Ik de role van je afgenomen.",
+    });
   }
 }
 
