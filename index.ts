@@ -117,12 +117,14 @@ let start = async () => {
       removeCommandMessages(client);
     }, 3300000);
   });
+
   client.on("interactionCreate", async (interaction) => {
     if (interaction.isButton()) {
       return handleButton(client, interaction);
     }
+
     if (!interaction.isCommand()) return console.log(interaction);
-    console.log(interaction.commandName);
+
     switch (interaction.commandName) {
       case "ping":
         await pingCommand(client, interaction);
