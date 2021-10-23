@@ -1,4 +1,3 @@
-import { ChannelType } from "discord-api-types";
 import {
   Client,
   CommandInteraction,
@@ -7,17 +6,16 @@ import {
   MessageActionRow,
   MessageButton,
   MessageButtonOptions,
+  MessageEmbed,
   MessageOptions,
   MessagePayload,
   MessageSelectMenu,
   MessageSelectOptionData,
   TextChannel,
+  User,
 } from "discord.js";
 
-export default async function pollCommand(
-  client: Client,
-  interaction: CommandInteraction
-) {
+export async function execute(client: Client, interaction: CommandInteraction) {
   let guild = await client.guilds.fetch("375636201648160768");
   let member = (await guild.members.fetch(interaction.user.id)) as GuildMember;
   if (!member) {
@@ -69,12 +67,47 @@ export default async function pollCommand(
   );
 
   try {
-    let x = await (channel! as TextChannel).send(payload);
-    await interaction.editReply(
-      ":white_check_mark: Je poll is aangemaakt! Ga naar <#" +
-        channel!.id +
-        "> om het resultaat te zien."
+    let pollMessage = await (channel! as TextChannel).send(payload);
+    let fields = waardes.map((i) => {
+      return {
+        name: i,
+        value: "0 stemmen",
+        inline: false,
+      };
+    });
+    let url =
+      "https://discord.com/channels/" +
+      pollMessage.guildId +
+      "/" +
+      pollMessage.channelId +
+      "/" +
+      pollMessage.id;
+    let resultsPayload = MessagePayload.create(
+      interaction.channel as TextChannel,
+      {
+        content:
+          ":white_check_mark: Je poll is aangemaakt! Ga naar <#" +
+          channel!.id +
+          "> om het resultaat te zien.",
+        embeds: [
+          new MessageEmbed({
+            title: "Poll results",
+            description: interaction.options.getString("titel") || "[POLL]",
+            timestamp: new Date(),
+            color: 0xff0000,
+            fields,
+            author: {
+              name: interaction.member!.user.username,
+              icon_url:
+                (interaction.member!.user as User).avatarURL() || undefined,
+              url,
+            },
+          }),
+        ],
+      }
     );
+    let message = await interaction.editReply(resultsPayload);
+    console.log(message.id);
   } catch (e) {
     console.error(e);
     interaction.editReply(
@@ -88,3 +121,61 @@ function noPerm(interaction: CommandInteraction) {
     ":warning: Je hebt geen permissie om dit command uit te voeren.\n Je moet **Crew** zijn om dit command uit te kunnen voeren."
   );
 }
+
+export const manifest = {
+  permissionType: "CREW",
+  content: {
+    name: "maakpoll",
+    description: "Maak een nieuwe poll aan. Alleen voor Project:Lan crew",
+    options: [
+      {
+        name: "titel",
+        description: "Het bericht dat boven de poll komt te staan.",
+        required: true,
+        type: 3,
+      },
+      {
+        name: "kanaal",
+        description: "Het kanaal waar de poll naar wordt verstuurd.",
+        required: true,
+        type: 7,
+      },
+      {
+        name: "waarde-1",
+        description: "Optie 1 voor de poll",
+        required: true,
+        type: 3,
+      },
+      {
+        name: "waarde-2",
+        description: "Optie 2 voor de poll",
+        required: true,
+        type: 3,
+      },
+      {
+        name: "waarde-3",
+        description: "Optie 3 voor de poll",
+        required: false,
+        type: 3,
+      },
+      {
+        name: "waarde-4",
+        description: "Optie 4 voor de poll",
+        required: false,
+        type: 3,
+      },
+      {
+        name: "waarde-5",
+        description: "Optie 5 voor de poll",
+        required: false,
+        type: 3,
+      },
+    ],
+    default_permission: false,
+  },
+};
+
+export default {
+  execute,
+  manifest,
+};

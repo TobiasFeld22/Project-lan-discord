@@ -1,4 +1,7 @@
 {
-    "token": "discord bot token"
+    "token": "discord bot token",
+	"app_id": "",
+	"crew_role": "",
+	"bot_owner_id": "",
+	"clear_channel_id": ""
 }
- 

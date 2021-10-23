@@ -1,10 +1,48 @@
-import { APIInteractionGuildMember } from "discord-api-types";
 import { Client, CommandInteraction, GuildMember } from "discord.js";
 
-export default async function role(
-  client: Client,
-  interaction: CommandInteraction
-) {
+export const manifest = {
+  permissionType: "ALL",
+  content: {
+    name: "role",
+    description: "vraag een bepaalde role aan.",
+    options: [
+      {
+        name: "role",
+        description: "Kies de rol die bij je wilt krijgen",
+        required: true,
+        type: 3,
+        choices: [
+          {
+            name: "GameBattle",
+            value: "GB",
+          },
+          {
+            name: "CLV-LAN",
+            value: "CLV-LAN",
+          },
+          {
+            name: "Playstation",
+            value: "playstation",
+          },
+          {
+            name: "PC",
+            value: "pc",
+          },
+          {
+            name: "Xbox",
+            value: "xbox",
+          },
+          {
+            name: "Nintendo Switch",
+            value: "switch",
+          },
+        ],
+      },
+    ],
+  },
+};
+
+export async function execute(client: Client, interaction: CommandInteraction) {
   if (!interaction.member) {
     return;
   }
@@ -79,3 +117,8 @@ async function hasRole(member: GuildMember, role: string) {
   }
   return fetchedRole?.members.has(member.id);
 }
+
+export default {
+  execute,
+  manifest,
+};

@@ -8,112 +8,12 @@ import pollCommand from "./pollCommand";
 
 const rest = new REST({ version: "9" }).setToken(config.token);
 
-const APP_ID = "378146092413353985";
-let channelId = "378156957070000139";
-
-let crewApps = new Map();
-crewApps.set("maakpoll", {
-  id: "489483634571739166",
-  type: 1,
-  permission: true,
-});
-
-const commands = [
-  {
-    name: "ping",
-    description: "Stuurt pong terug!",
-  },
-  {
-    name: "role",
-    description: "vraag een bepaalde role aan.",
-    options: [
-      {
-        name: "role",
-        description: "Kies de rol die bij je wilt krijgen",
-        required: true,
-        type: 3,
-        choices: [
-          {
-            name: "GameBattle",
-            value: "GB",
-          },
-          {
-            name: "CLV-LAN",
-            value: "CLV-LAN",
-          },
-          {
-            name: "Playstation",
-            value: "playstation",
-          },
-          {
-            name: "PC",
-            value: "pc",
-          },
-          {
-            name: "Xbox",
-            value: "xbox",
-          },
-          {
-            name: "Nintendo Switch",
-            value: "switch",
-          },
-        ],
-      },
-    ],
-  },
-  {
-    name: "maakpoll",
-    description: "Maak een nieuwe poll aan. Alleen voor Project:Lan crew",
-    options: [
-      {
-        name: "titel",
-        description: "Het bericht dat boven de poll komt te staan.",
-        required: true,
-        type: 3,
-      },
-      {
-        name: "kanaal",
-        description: "Het kanaal waar de poll naar wordt verstuurd.",
-        required: true,
-        type: 7,
-      },
-      {
-        name: "waarde-1",
-        description: "Optie 1 voor de poll",
-        required: true,
-        type: 3,
-      },
-      {
-        name: "waarde-2",
-        description: "Optie 2 voor de poll",
-        required: true,
-        type: 3,
-      },
-      {
-        name: "waarde-3",
-        description: "Optie 3 voor de poll",
-        required: false,
-        type: 3,
-      },
-      {
-        name: "waarde-4",
-        description: "Optie 4 voor de poll",
-        required: false,
-        type: 3,
-      },
-      {
-        name: "waarde-5",
-        description: "Optie 5 voor de poll",
-        required: false,
-        type: 3,
-      },
-    ],
-    default_permission: false,
-  },
-];
+const commands = [pingCommand, pollCommand, roleCommand];
 
 async function removeCommandMessages(client: Client) {
-  let channel = (await client.channels.fetch(channelId)) as TextChannel;
+  let channel = (await client.channels.fetch(
+    config.clear_channel_id
+  )) as TextChannel;
   try {
     let messages = await channel.messages.fetch({
       limit: 20,
@@ -135,47 +35,55 @@ async function refreshCommands() {
     console.log("[REFRESH] Start refreshing / commands");
 
     // voeg commands toe, override meteen oude. Indien een al-bestaand command niet in de lijst staat, zal hij binnen een uur "wegfaden".
-    await rest.put(Routes.applicationCommands(APP_ID), {
-      body: commands,
+    await rest.put(Routes.applicationCommands(config.app_id), {
+      body: commands.map((command) => command.manifest.content),
     });
 
     // Krijg een lijstje met alle huidige actieve commands
     let curr_commands = (await rest.get(
-      Routes.applicationCommands(APP_ID)
+      Routes.applicationCommands(config.app_id)
     )) as any[];
     let permission_data: { id: string; permissions: any }[] = [];
 
     // Filter commands die nieuwe permission overwrites nodig hebben
-    curr_commands.forEach((command: any) => {
-      if (crewApps.has(command.name)) {
-        permission_data.push({
-          id: command.id,
-          permissions: [crewApps.get(command.name)],
-        });
+    curr_commands.forEach((command: { id: string; name: string }) => {
+      let filtered = commands.filter(
+        (c) => c.manifest.content.name == command.name
+      );
+      if (filtered.length > 0) {
+        switch (filtered[0].manifest.permissionType) {
+          case "ALL":
+            return;
+          case "CREW":
+            permission_data.push({
+              id: command.id,
+              permissions: [
+                {
+                  id: config.crew_role,
+                  type: 1,
+                  permission: true,
+                },
+                {
+                  id: config.bot_owner_id,
+                  type: 2,
+                  permission: true,
+                },
+              ],
+            });
+            break;
+          default:
+            throw (
+              "Onbekend permission type: " + filtered[0].manifest.permissionType
+            );
+        }
       }
     });
     // indien permission overwrites nodig zijn, voeg die toe aan de globale lijst.
     if (permission_data.length > 0) {
       await rest.put(
         Routes.guildApplicationCommandsPermissions(
-          APP_ID,
+          config.app_id,
           "375636201648160768"
-        ),
-        {
-          body: permission_data,
-        }
-      );
-
-      // Pas de globale permissions ook toe op de owner van de bot :)
-      permission_data.forEach((i) => {
-        i.permissions[0].id = "218459651098935297";
-        i.permissions[0].type = 2;
-      });
-
-      await rest.put(
-        Routes.guildApplicationCommandsPermissions(
-          APP_ID,
-          "237019583972638720"
         ),
         {
           body: permission_data,
@@ -218,13 +126,13 @@ let start = async () => {
 
     switch (interaction.commandName) {
       case "ping":
-        await pingCommand(client, interaction);
+        await pingCommand.execute(client, interaction);
         break;
       case "role":
-        await roleCommand(client, interaction);
+        await roleCommand.execute(client, interaction);
         break;
       case "maakpoll":
-        await pollCommand(client, interaction);
+        await pollCommand.execute(client, interaction);
     }
   });
 
