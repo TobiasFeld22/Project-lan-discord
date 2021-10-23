@@ -2,18 +2,18 @@ import {
   Client,
   CommandInteraction,
   GuildMember,
-  Message,
   MessageActionRow,
   MessageButton,
   MessageButtonOptions,
   MessageEmbed,
   MessageOptions,
   MessagePayload,
-  MessageSelectMenu,
-  MessageSelectOptionData,
   TextChannel,
   User,
 } from "discord.js";
+
+import path from "path";
+import { mkdir, readdir, writeFile } from "fs-extra";
 
 export async function execute(client: Client, interaction: CommandInteraction) {
   let guild = await client.guilds.fetch("375636201648160768");
@@ -51,7 +51,7 @@ export async function execute(client: Client, interaction: CommandInteraction) {
     let row = new MessageActionRow();
     let button = new MessageButton({
       style: "DANGER",
-      customId: `waarde_${index}_vote`,
+      customId: `waarde_${index + 1}_vote`,
       label: waarde,
     } as MessageButtonOptions);
     row.addComponents(button);
@@ -67,14 +67,20 @@ export async function execute(client: Client, interaction: CommandInteraction) {
   );
 
   try {
-    let pollMessage = await (channel! as TextChannel).send(payload);
-    let fields = waardes.map((i) => {
+    let json: any = {};
+    let fields = waardes.map((i, n) => {
+      json["waarde_" + (n + 1)] = {
+        name: i,
+        votes: [],
+      };
       return {
         name: i,
-        value: "0 stemmen",
-        inline: false,
+        value: "0 stem(men)",
+        inline: true,
       };
     });
+    let pollMessage = await (channel! as TextChannel).send(payload);
+
     let url =
       "https://discord.com/channels/" +
       pollMessage.guildId +
@@ -82,20 +88,33 @@ export async function execute(client: Client, interaction: CommandInteraction) {
       pollMessage.channelId +
       "/" +
       pollMessage.id;
+    let resultsRow = new MessageActionRow({
+      components: [
+        new MessageButton({
+          customId: "poll_list_" + pollMessage.id + "_" + interaction.user.id,
+          style: "SECONDARY",
+          label: "Krijg lijst met namen",
+          emoji: "🧑‍🤝‍🧑",
+        }),
+      ],
+    });
+
     let resultsPayload = MessagePayload.create(
       interaction.channel as TextChannel,
       {
+        components: [resultsRow],
         content:
           ":white_check_mark: Je poll is aangemaakt! Ga naar <#" +
           channel!.id +
           "> om het resultaat te zien.",
         embeds: [
           new MessageEmbed({
-            title: "Poll results",
+            title: "Poll resultaten",
             description: interaction.options.getString("titel") || "[POLL]",
             timestamp: new Date(),
             color: 0xff0000,
             fields,
+            footer: { text: "Gemaakt op: " },
             author: {
               name: interaction.member!.user.username,
               icon_url:
@@ -107,7 +126,27 @@ export async function execute(client: Client, interaction: CommandInteraction) {
       }
     );
     let message = await interaction.editReply(resultsPayload);
-    console.log(message.id);
+    json["messageId"] = message.id;
+    json["channelId"] = channel.id;
+
+    try {
+      try {
+        await readdir(path.join(process.cwd(), "data", "polls"));
+      } catch (e: any) {
+        if (e.code == "ENOENT") {
+          await mkdir(path.join(process.cwd(), "data", "polls"));
+        } else {
+          throw e;
+        }
+      }
+      await writeFile(
+        path.join(process.cwd(), "data", "polls", pollMessage.id + ".json"),
+        JSON.stringify(json)
+      );
+    } catch (e) {
+      pollMessage.delete();
+      throw e;
+    }
   } catch (e) {
     console.error(e);
     interaction.editReply(

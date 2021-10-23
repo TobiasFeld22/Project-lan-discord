@@ -5,6 +5,8 @@ import config from "./data/config.json";
 import pingCommand from "./pingCommand";
 import roleCommand from "./roleCommand";
 import pollCommand from "./pollCommand";
+import pollButtonHandler from "./pollButtonHandler";
+import pollResultButtonHandler from "./pollResultButtonHandler";
 
 const rest = new REST({ version: "9" }).setToken(config.token);
 
@@ -142,11 +144,13 @@ let start = async () => {
 start();
 
 async function handleButton(client: Client, interaction: ButtonInteraction) {
-  switch (interaction.customId) {
-    case "button_test":
-      interaction.reply({ ephemeral: true, content: "test" });
-      break;
+  const buttons = [pollButtonHandler, pollResultButtonHandler].filter((i) =>
+    i.filter.test(interaction.customId)
+  );
+  if (buttons.length == 0) {
+    return;
   }
+  buttons[0].execute(client, interaction);
 }
 
 async function editInfoMessage(client: Client) {
