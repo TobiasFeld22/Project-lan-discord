@@ -4,10 +4,19 @@ import { ButtonInteraction, Client, Intents, TextChannel } from "discord.js";
 import config from "./data/config.json";
 import pingCommand from "./pingCommand";
 import roleCommand from "./roleCommand";
-import testCommand from "./testCommand";
+import pollCommand from "./pollCommand";
 
 const rest = new REST({ version: "9" }).setToken(config.token);
+
+const APP_ID = "378146092413353985";
 let channelId = "378156957070000139";
+
+let crewApps = new Map();
+crewApps.set("maakpoll", {
+  id: "489483634571739166",
+  type: 1,
+  permission: true,
+});
 
 const commands = [
   {
@@ -52,11 +61,54 @@ const commands = [
       },
     ],
   },
-];
-const commandsTest = [
   {
-    name: "test",
-    description: "test",
+    name: "maakpoll",
+    description: "Maak een nieuwe poll aan. Alleen voor Project:Lan crew",
+    options: [
+      {
+        name: "titel",
+        description: "Het bericht dat boven de poll komt te staan.",
+        required: true,
+        type: 3,
+      },
+      {
+        name: "kanaal",
+        description: "Het kanaal waar de poll naar wordt verstuurd.",
+        required: true,
+        type: 7,
+      },
+      {
+        name: "waarde-1",
+        description: "Optie 1 voor de poll",
+        required: true,
+        type: 3,
+      },
+      {
+        name: "waarde-2",
+        description: "Optie 2 voor de poll",
+        required: true,
+        type: 3,
+      },
+      {
+        name: "waarde-3",
+        description: "Optie 3 voor de poll",
+        required: false,
+        type: 3,
+      },
+      {
+        name: "waarde-4",
+        description: "Optie 4 voor de poll",
+        required: false,
+        type: 3,
+      },
+      {
+        name: "waarde-5",
+        description: "Optie 5 voor de poll",
+        required: false,
+        type: 3,
+      },
+    ],
+    default_permission: false,
   },
 ];
 
@@ -82,18 +134,55 @@ async function refreshCommands() {
   try {
     console.log("[REFRESH] Start refreshing / commands");
 
-    await rest.put(Routes.applicationCommands("378146092413353985"), {
+    // voeg commands toe, override meteen oude. Indien een al-bestaand command niet in de lijst staat, zal hij binnen een uur "wegfaden".
+    await rest.put(Routes.applicationCommands(APP_ID), {
       body: commands,
     });
-    await rest.put(
-      Routes.applicationGuildCommands(
-        "378146092413353985",
-        "237019583972638720"
-      ),
-      {
-        body: commandsTest,
+
+    // Krijg een lijstje met alle huidige actieve commands
+    let curr_commands = (await rest.get(
+      Routes.applicationCommands(APP_ID)
+    )) as any[];
+    let permission_data: { id: string; permissions: any }[] = [];
+
+    // Filter commands die nieuwe permission overwrites nodig hebben
+    curr_commands.forEach((command: any) => {
+      if (crewApps.has(command.name)) {
+        permission_data.push({
+          id: command.id,
+          permissions: [crewApps.get(command.name)],
+        });
       }
-    );
+    });
+    // indien permission overwrites nodig zijn, voeg die toe aan de globale lijst.
+    if (permission_data.length > 0) {
+      await rest.put(
+        Routes.guildApplicationCommandsPermissions(
+          APP_ID,
+          "375636201648160768"
+        ),
+        {
+          body: permission_data,
+        }
+      );
+
+      // Pas de globale permissions ook toe op de owner van de bot :)
+      permission_data.forEach((i) => {
+        i.permissions[0].id = "218459651098935297";
+        i.permissions[0].type = 2;
+      });
+
+      await rest.put(
+        Routes.guildApplicationCommandsPermissions(
+          APP_ID,
+          "237019583972638720"
+        ),
+        {
+          body: permission_data,
+        }
+      );
+    }
+
     console.log("[REFRESH] Finished refreshing / commands");
   } catch (error) {
     console.error(error);
@@ -103,7 +192,9 @@ async function refreshCommands() {
 }
 
 let start = async () => {
-  const client = new Client({ intents: [Intents.FLAGS.GUILD_MEMBERS] });
+  const client = new Client({
+    intents: [Intents.FLAGS.GUILD_MEMBERS, Intents.FLAGS.GUILDS],
+  });
   await refreshCommands();
 
   client.on("ready", async () => {
@@ -132,8 +223,8 @@ let start = async () => {
       case "role":
         await roleCommand(client, interaction);
         break;
-      case "test":
-        await testCommand(client, interaction);
+      case "maakpoll":
+        await pollCommand(client, interaction);
     }
   });
 
