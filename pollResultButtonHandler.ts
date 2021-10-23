@@ -40,7 +40,7 @@ export async function execute(client: Client, interaction: ButtonInteraction) {
       return interaction.editReply(
         ":people_holding_hands: Poll deelnemers:\n\n" +
           Array.from(votes)
-            .map((i) => "<@" + i[0] + "> | " + i[1].join("•"))
+            .map((i) => "<@" + i[0] + "> | " + i[1].join(" • "))
             .join("\n")
       );
     }
