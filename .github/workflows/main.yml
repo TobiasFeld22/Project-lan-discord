@@ -1,9 +1,6 @@
 name: GitHub Actions Demo
-run-name: ${{ github.actor }} is testing out GitHub Actions 🚀
-on:
-  pull_request:
-    branches:
-    - master
+run-name: Deploy to ${{ inputs.deploy_target }} by @${{ github.actor }}
+on: [push]
 jobs:
   build:
     runs-on: ubuntu-latest
