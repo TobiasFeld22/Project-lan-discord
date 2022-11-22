@@ -23,7 +23,7 @@ export async function execute(client: Client, interaction: CommandInteraction) {
 			id: "CLV_LAN",
 		},
 		{
-			name: "Aanwezig GameBattle 2022",
+			name: "Aanwezig GameBattle 2023",
 			id: "GB",
 		},
 		{

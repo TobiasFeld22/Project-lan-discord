@@ -79,11 +79,3 @@ async function handleButton(client: Client, interaction: ButtonInteraction) {
 	buttons[0].execute(client, interaction);
 }
 
-async function editInfoMessage(client: Client) {
-	let x = await client.guilds.fetch("375636201648160768");
-	let y = await x.channels.fetch("378156957070000139");
-	let z = await (y as TextChannel).messages.fetch("678653356356665418");
-	z.edit(
-		"> **De bot gebruikt vanaf nu slash (/) commands. **\n > \n > /role <rolenaam> - Krijg de uit de lijst gekozen role.\n\n:warning:  Wij raden aan om dit kanaal te muten!\n\n:grey_exclamation: Berichten worden automatisch verwijderd."
-	);
-}
