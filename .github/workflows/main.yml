@@ -10,5 +10,6 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 16
+      - run: cp ./data/config.json.sample ./data/config.json
       - run: npm ci
       - run: tsc
